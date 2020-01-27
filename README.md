@@ -1,4 +1,4 @@
-![Preview](https://github.com/Sergey-Khlustikov/Vue.js-Adboard/blob/master/demo.JPG)
+![Preview](https://github.com/Sergey-Khlustikov/Vue.js-Adboard/blob/master/assets/demo.JPG)
 # Vue.js Ad board SPA
 
 > Demo ad board SPA where you can:
