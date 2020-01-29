@@ -1,4 +1,5 @@
-import * as fb from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/database'
 
 class Order {
   constructor (name, phone, adId, done = false, id = null) {
@@ -36,7 +37,7 @@ export default {
 
       commit('clearError')
       try {
-        await fb.database().ref(`users/${ownerId}/orders`).push(order)
+        await firebase.database().ref(`users/${ownerId}/orders`).push(order)
       } catch (e) {
         commit('setError', e.message)
         throw e
@@ -48,7 +49,7 @@ export default {
       commit('clearError')
       const resultOrders = []
       try {
-        const fbVal = await fb.database().ref(`/users/${getters.user.id}/orders/`).once('value')
+        const fbVal = await firebase.database().ref(`/users/${getters.user.id}/orders/`).once('value')
         const orders = fbVal.val()
 
         if (orders) {
@@ -72,7 +73,7 @@ export default {
     async markOrderDone ({commit, getters}, payload) {
       commit('clearError')
       try {
-        await fb.database().ref(`/users/${getters.user.id}/orders`).child(payload).update({
+        await firebase.database().ref(`/users/${getters.user.id}/orders`).child(payload).update({
           done: true
         })
       } catch (e) {

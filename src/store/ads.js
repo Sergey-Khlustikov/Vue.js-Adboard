@@ -1,4 +1,6 @@
-import * as fb from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/storage'
+import 'firebase/database'
 
 class Ad {
   constructor (title, description, ownerId, imageSrc = '', promo = false, id = null) {
@@ -66,7 +68,7 @@ export default {
 
       const resultAds = []
       try {
-        const fbVal = await fb.database().ref('ads').once('value')
+        const fbVal = await firebase.database().ref('ads').once('value')
         const ads = fbVal.val()
         Object.keys(ads).forEach(key => {
           const ad = ads[key]
@@ -101,13 +103,13 @@ export default {
           '',
           payload.promo
         )
-        const ad = await fb.database().ref('ads').push(newAd)
+        const ad = await firebase.database().ref('ads').push(newAd)
         const imageExt = image.name.slice(image.name.lastIndexOf('.'))
 
-        await fb.storage().ref(`ads/${ad.key}.${imageExt}`).put(image)
+        await firebase.storage().ref(`ads/${ad.key}.${imageExt}`).put(image)
 
-        const imageSrc = await fb.storage().ref().child(`ads/${ad.key}.${imageExt}`).getDownloadURL()
-        await fb.database().ref('ads').child(ad.key).update({imageSrc})
+        const imageSrc = await firebase.storage().ref().child(`ads/${ad.key}.${imageExt}`).getDownloadURL()
+        await firebase.database().ref('ads').child(ad.key).update({imageSrc})
 
         commit('setLoading', false)
         commit('createAd', {
@@ -130,13 +132,13 @@ export default {
         let imageSrc = null
         if (typeof image !== 'string') {
           const imageExt = image.name.slice(image.name.lastIndexOf('.'))
-          await fb.storage().ref(`ads/${id}.${imageExt}`).put(image)
-          imageSrc = await fb.storage().ref().child(`ads/${id}.${imageExt}`).getDownloadURL()
+          await firebase.storage().ref(`ads/${id}.${imageExt}`).put(image)
+          imageSrc = await firebase.storage().ref().child(`ads/${id}.${imageExt}`).getDownloadURL()
         } else {
           imageSrc = image
         }
 
-        await fb.database().ref('ads').child(id).update({title, description, imageSrc})
+        await firebase.database().ref('ads').child(id).update({title, description, imageSrc})
         commit('updateAd', {title, description, id, imageSrc})
         commit('setLoading', false)
       } catch (e) {
@@ -150,7 +152,7 @@ export default {
       commit('clearError')
       commit('setLoading', true)
       try {
-        await fb.database().ref('ads').child(payload).remove()
+        await firebase.database().ref('ads').child(payload).remove()
         commit('deleteAd', payload)
         commit('setLoading', false)
       } catch (e) {
